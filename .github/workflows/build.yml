@@ -8,12 +8,7 @@
 
 name: Build System Image
 
-on: 
-  push:
-    branches:
-      - master
-  release:
-    types: [published]
+on: workflow_dispatch
 
 jobs:
 
@@ -21,8 +16,8 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      VENDOR: xiaomi
-      DEVICE: rolex
+      VENDOR: htc
+      DEVICE: oce
       ANDROID_ROOT: /home/runner/work/halium/
 
     steps:
@@ -48,19 +43,20 @@ jobs:
         mkdir -p ~/bin
         wget 'https://storage.googleapis.com/git-repo-downloads/repo' -P ~/bin
         chmod +x ~/bin/repo
-        git config --global user.name "UBports Redmi 4A CI"
-        git config --global user.email "thisemaildoesnotexist@exist.com"
+        git config --global user.name "Mohamedsharaf195"
+        git config --global user.email "mhs195@proton.me"
 
     - name: Downloading source code
       run: |
         source halium.env
         mkdir -p $ANDROID_ROOT
         cd $ANDROID_ROOT
-        repo init -u https://github.com/Halium/android -b halium-7.1 --depth=1
-        mkdir -p $ANDROID_ROOT/.repo/local_manifests
-        wget https://raw.githubusercontent.com/Halium/halium-devices/halium-7.1/manifests/"$VENDOR"_"$DEVICE".xml -O $ANDROID_ROOT/.repo/local_manifests/$DEVICE.xml
+        repo init -u https://github.com/Halium/android -b halium-9.0 --depth=1
         repo sync -j8 -c --no-clone-bundle --no-tags
-    
+        wget https://raw.githubusercontent.com/Mohamedsharaf195/dev/refs/heads/main/htc_oce.xml -O $ANDROID_ROOT/halium/devices/manifests/htc_oce.xml
+        ./halium/devices/setup oce
+        ./hybris-patches/apply-patches.sh --mb
+
     - name: Build HAL
       run: |
         sudo apt update
@@ -69,28 +65,16 @@ jobs:
         sudo ln -sf python2.7 /usr/bin/python
         chmod +x build-hal.sh
         bash -x build-hal.sh
-      shell: bash
-    
-    - name : Upload boot image
-      uses: actions/upload-artifact@master
-      with:
-        name: hybris-boot image
-        path: /home/runner/work/halium/out/target/product/rolex/hybris-boot.img
+        shell: bash
 
     - name : Upload boot image
       uses: actions/upload-artifact@master
       with:
         name: halium-boot image
-        path: /home/runner/work/halium/out/target/product/rolex/halium-boot.img
-
-    - name : Upload recovery image
-      uses: actions/upload-artifact@master
-      with:
-        name: Recovery image
-        path: /home/runner/work/halium/out/target/product/rolex/recovery.img
+        path: /home/runner/work/halium/out/target/product/oce/halium-boot.img
 
     - name : Upload system image
       uses: actions/upload-artifact@master
       with:
         name: System image
-        path: /home/runner/work/halium/out/target/product/rolex/system.img
+        path: /home/runner/work/halium/out/target/product/oce/system.img

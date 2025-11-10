@@ -13,7 +13,7 @@ on: workflow_dispatch
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     env:
       VENDOR: htc
@@ -28,13 +28,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-        openjdk-8-jdk android-tools-adb bc \
+        openjdk-8-jdk adb bc \
         bison build-essential curl flex g++-multilib \
-        gcc-multilib gnupg gperf imagemagick lib32ncurses5-dev \
+        gcc-multilib gnupg gperf imagemagick \
         lib32readline-dev lib32z1-dev liblz4-tool \
         libncurses5-dev libsdl1.2-dev libssl-dev \
         libxml2 libxml2-utils lzop pngcrush rsync schedtool \
-        squashfs-tools xsltproc yasm zip zlib1g-dev git python3.7
+        squashfs-tools xsltproc yasm zip zlib1g-dev git python3
         sudo docker rmi `docker images -q`
         sudo rm -rf \
           /usr/share/dotnet \
